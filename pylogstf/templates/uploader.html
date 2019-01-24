@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/vendor/jquery.fineuploader-3.1.1.min.js') }}"></script>	
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="log-section">
+	<h3>Manual upload: TF2 server logs</h3>
+	<p>Log should contain at least one full round and have more than 2 players.</p>	
+	<div id="files">
+		<table id="uploader-table" class="table" style="display: none">	
+			<thead>
+				<tr><th>File</th><th>Title</th><th>Map</th><th>Status</th></tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>	
+	</div>
+	<a id="fileuploader" class="btn btn-success">Add logs</a> <a href="#" class="btn" id="uploadfiles" disabled>Upload</a> <a href="#" class="btn" id="resetfiles" disabled>Clear</a>	
+</div>
+<div class="log-section">
+	<h3>Automated upload: Logs.tf API key</h3>
+	<p>Key: <strong><span id="apikey">{{ apikey }}</span></strong></p>
+	<p>This key is used for uploading logs from TF2 server plugins. Highlight text in the grey box to copy it. Your current name will be attached to API key on generation and will be shown on auto-uploaded logs.</p>
+	<a href="#" class="btn" id="generatekey">Generate a new API key</a>
+</div>
+
+<script>
+$('#generatekey').click(function(e) {
+	e.preventDefault();
+	let permission = confirm('Do you really want to generate a new API key? This will replace your previous API key.');
+	if (!permission) return;
+	$.get('/createkey?t={{ g.token }}', function(data) {
+		$('#apikey').html(data);  		
+	});
+});
+</script>
+
+{% include 'help.html' %}
+
+{% endblock %}

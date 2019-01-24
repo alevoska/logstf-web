@@ -1,0 +1,41 @@
+<div class="healspread">
+{% for healer in l.healspread_sorted %}	
+<div class="healtable">
+	<h6 class="{% if l.players[healer].team == 'Red' %}red{% else %}blu{% endif %}">{{ l.names[healer] }}</h6>
+	<table class="table table-condensed log medstats">		
+		<tr><td class="medtype">Healing</td><td class="medval"><strong>{{ l.players[healer].heal }}</strong> ({{ (l.players[healer].heal / l.info.total_length * 60)|int }}/m)</td></tr>
+		<tr><td class="medtype">Charges</td><td class="medval">
+		{% if l.players[healer].ubertypes %}
+		<ul class="ubertypes unstyled">
+		{% for medigun in l.players[healer].ubertypes %}
+			<li>{{ medigun|capitalize }}: <strong>{{ l.players[healer].ubertypes[medigun] }}</strong> ({{ (l.players[healer].ubertypes[medigun] / l.players[healer].ubers * 100)|int }}%) </li>
+		{% endfor %}
+		</ul>
+		{% else %}{{ l.players[healer].ubers }}{% endif %}
+		</td></tr>			
+		<tr><td class="medtype">Drops</td><td class="medval">{{ l.players[healer].drops }}</td></tr>	
+		{% if l.players[healer].medicstats %}
+		{#{% if l.players[healer].medicstats.avg_time_before_healing is defined %}<tr><td class="medtype">Avg time before healing</td><td class="medval">{{ l.players[healer].medicstats.avg_time_before_healing|round(1)|default(0) }} s</td></tr>{% endif %}#}
+		{% if l.players[healer].medicstats.avg_time_to_build is defined %}<tr><td class="medtype">Avg time to build</td><td class="medval">{{ l.players[healer].medicstats.avg_time_to_build|int|default(0) }} s</td></tr>{% endif %}
+		{% if l.players[healer].medicstats.avg_time_before_using is defined %}<tr><td class="medtype">Avg time before using</td><td class="medval">{{ l.players[healer].medicstats.avg_time_before_using|int|default(0) }} s</td></tr>{% endif %}
+		{% if l.players[healer].medicstats.deaths_with_95_99_uber is defined %}<tr><td class="medtype">Near full charge deaths</td><td class="medval">{{ l.players[healer].medicstats.deaths_with_95_99_uber|default(0) }}</td></tr>{% endif %}
+		{% if l.players[healer].medicstats.avg_uber_length is defined %}<tr><td class="medtype">Avg uber length</td><td class="medval">{{ l.players[healer].medicstats.avg_uber_length|round(1)|default(0) }} s</td></tr>{% endif %}
+		{% if l.players[healer].medicstats.deaths_within_20s_after_uber is defined %}<tr><td class="medtype">Deaths after charge</td><td class="medval">{{ l.players[healer].medicstats.deaths_within_20s_after_uber|default(0) }}</td></tr>{% endif %}
+		{% if l.players[healer].medicstats.advantages_lost is defined %}<tr><td class="medtype">Major advantages lost</td><td class="medval">{{ l.players[healer].medicstats.advantages_lost|default(0) }}</td></tr>{% endif %}
+		{% if l.players[healer].medicstats.biggest_advantage_lost is defined %}<tr><td class="medtype">Biggest advantage lost</td><td class="medval">{{ l.players[healer].medicstats.biggest_advantage_lost|default(0) }} s</td></tr>{% endif %}
+		{% endif %}
+	</table>
+	<table class="table table-condensed log healsort">
+	<thead>
+		<tr><th class="players-name" data-lockedorder="asc">Heal Target</th><th>Class</th><th data-lockedorder="desc">Heals</th><th data-lockedorder="desc">%</th></tr>
+	</thead>
+	<tbody>
+	{% for h in l.healspread[healer] %}{% if l.names[h] %}
+	{% set percent = l.healspread[healer][h] / l.players[healer].heal * 100 %}
+		<tr><td class="log-player-name">{{ l.names[h] }}</td><td>{{ classimage(l.players[h].class_stats[0].type, 1) }}</td><td>{{ l.healspread[healer][h] }}</td><td><strong>{{ percent|int }}</strong></td></tr>
+	{% endif %}{% endfor %}
+	</tbody>
+	</table>
+</div>
+{% endfor %}
+</div>

@@ -1,0 +1,62 @@
+<script>
+$(document).ready(function () {
+	$('.edit_update').click(function (e) {
+		e.preventDefault();
+		var log_id = $(this).data('logid');		
+		var data = {
+			t: '{{ g.token }}',
+			title: $('#title_' + log_id).val(),
+			tf2map: $('#map_' + log_id).val()
+		};
+		$.getJSON('/' + log_id + '/update', data, function(res) {
+			var msg;
+			if (res.success) {
+				msg = 'Updated log #' + log_id;
+			} else {
+				msg = 'Error updating log information: ' + res.error;
+			}
+			$('#messages').append('<div class="alert"><button type="button" class="close" data-dismiss="alert">×</button>' + msg + '</div>');			
+		});
+	});
+
+	$('.edit_delete').click(function (e) {
+		e.preventDefault();
+		var confirmed = confirm('Are you sure you want to delete this log?');		
+		if (!confirmed) return;
+		var log_id = $(this).data('logid');		
+		var data = {
+			t: '{{ g.token }}',
+		};
+		$.getJSON('/' + log_id + '/delete', data, function(res) {
+			var msg;
+			if (res.success) {
+				msg = 'Deleted log #' + log_id;
+				$('#log_' + log_id).hide();
+			} else {
+				msg = 'Error deleting log #' + log_id;
+			}
+			$('#messages').append('<div class="alert"><button type="button" class="close" data-dismiss="alert">×</button>' + msg + '</div>');			
+		});
+	});	
+
+	$('.edit_resetviews').click(function (e) {
+		e.preventDefault();
+		var confirmed = confirm('Are you sure you want to reset views in this log?');
+		if (!confirmed) return;
+		var log_id = $(this).data('logid');		
+		var data = {
+			t: '{{ g.token }}',
+		};
+		$.getJSON('/' + log_id + '/resetviews', data, function(res) {
+			var msg;
+			if (res.success) {
+				msg = 'Reset views from log #' + log_id;
+				$('#log_' + log_id).hide();
+			} else {
+				msg = 'Error resetting views for log #' + log_id;
+			}
+			$('#messages').append('<div class="alert"><button type="button" class="close" data-dismiss="alert">×</button>' + msg + '</div>');			
+		});
+	});		
+});
+</script>

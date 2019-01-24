@@ -1,0 +1,35 @@
+{% if l.rounds %}
+<table class="table table-condensed log" id="rounds">		
+	<thead>
+		<tr>
+			<th>Round</th><th>Length</th><th>Score</th><th>BLU<br>Kills</th><th>RED<br>Kills</th><th>BLU<br>Charges</th><th>RED<br>Charges</th>{% if l.info.supplemental %}<th>BLU<br>Damage</th><th>RED<br>Damage</th>{% endif %}{% if l.info.hasCP %}<th>Midfights</th>{% endif %}
+		</tr>
+	</thead>
+	<tbody>				
+		{% for r in l.rounds %}						
+		<tr class="round_row">					
+
+			<td>{{ loop.index }}</td>
+			<td>{{ r.length|mmss }}</td>
+			<td class="{{ 'blu'	if r.winner == 'Blue' else 'red' }}">{{ r.team.Blue.score }} - {{ r.team.Red.score }}</td>			
+			<td>{{ r.team.Blue.kills }}</td>
+			<td>{{ r.team.Red.kills }}</td>
+			<td>{{ r.team.Blue.ubers }}</td>
+			<td>{{ r.team.Red.ubers }}</td>
+			{% if l.info.supplemental %}
+			<td>{{ r.team.Blue.dmg }}</td>
+			<td>{{ r.team.Red.dmg }}</td>					
+			{% endif %}
+			{% if l.info.hasCP %}
+			{% if r.firstcap == 'Blue' %}<td class="blu">Blu</td>{% elif r.firstcap == 'Red' %}<td class="red">Red</td>
+			{% else %}<td>-</td>{% endif %}
+			{% endif %}					
+        </tr>					
+        {% endfor %}
+
+    </tbody>
+</table>					
+
+{% else %}
+<small>Older logs are currently missing rounds.</small>
+{% endif %}

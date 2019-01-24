@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block content %}
+{% if title %}<div class="log-header"><h3>{{ title }}</h3></div>{% endif %}
+
+<div class="log-section">
+{% if players %}
+<table class="table table-players log">
+    <tbody>
+    {% for p in players %}
+    <tr>
+        <td>{{ p[1].count }}</td>
+        <td>{% if p[1].avatar %}<img src="{{ p[1].avatar }}" class="avatar">{% endif %}
+            <a href="{{ url_for('lists.steamid_matches', steamid64=p[0]) }}">
+            {% for name in p[1].names %} 
+                {{ name[0] }}{% if not loop.last %}, {% endif %} 
+            {% endfor %}
+        </a></td>
+        <td>{{ p[0]|steamid }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+    
+{% else %}
+<h5>None found.</h5>
+{% endif %}
+</div>
+{% endblock %}
+
+

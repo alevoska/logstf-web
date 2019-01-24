@@ -1,0 +1,87 @@
+{% if l.rounds %}
+<table class="table table-condensed log" id="rounds">		
+	<thead>
+		<tr>
+			<th>Round</th><th>Length</th><th>Score</th><th>BLU<br>K</th><th>RED<br>K</th><th>BLU<br>UC</th><th>RED<br>UC</th>{% if l.info.supplemental %}<th>BLU<br>DA</th><th>RED<br>DA</th>{% endif %}{% if l.info.hasCP %}<th>Midfights</th>{% endif %}<th></th>
+		</tr>
+	</thead>
+	<tbody>				
+		{% for r in l.rounds %}						
+		<tr class="round_row">					
+
+			<td>{{ loop.index }}</td>
+			<td>{{ r.length|mmss }}</td>
+			<td class="{{ 'blu'	if r.winner == 'Blue' else 'red' }}">{{ r.team.Blue.score }} - {{ r.team.Red.score }}</td>			
+			<td>{{ r.team.Blue.kills }}</td>
+			<td>{{ r.team.Red.kills }}</td>
+			<td>{{ r.team.Blue.ubers }}</td>
+			<td>{{ r.team.Red.ubers }}</td>
+			{% if l.info.supplemental %}
+			<td>{{ r.team.Blue.dmg }}</td>
+			<td>{{ r.team.Red.dmg }}</td>					
+			{% endif %}
+			{% if l.info.hasCP %}
+			{% if r.firstcap == 'Blue' %}<td class="blu">Blu</td>{% elif r.firstcap == 'Red' %}<td class="red">Red</td>
+			{% else %}<td></td>{% endif %}
+			{% endif %}			
+			<td>˅</td>			
+		</tr>					
+		<tr class="events">{% if (l.info.supplemental) %}<td colspan="11">{% else %}<td colspan="9">{% endif %}			
+			<table class="table table-condensed roundtable">				
+				<thead>
+					<tr><th class="team">Team</th><th>Name</th><th data-lockedorder="desc">Kills</th><th data-lockedorder="desc">Damage</th></tr>
+				</thead>
+				<tbody>
+					
+					{% for p in r.players if p in l.players %}
+					<tr>							
+						{% if l.players[p]['team'] == 'Red' %}<td class="red">Red</td>{% else %}<td class="blu">Blu</td>{% endif %}					
+					<td class="log-player-name">{{ l.names[p] }}</td>
+					<td>{{ r.players[p].kills }}</td>
+					<td>{{ r.players[p].dmg }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>			
+		
+		<table class="table table-condensed table-event">
+			<thead>
+				<tr><th colspan="3">Events</th></tr>
+			</thead>
+			<tbody>
+				{% for c in r.events %}
+				<tr>							
+					<td>{{ c.time|mmss }}</td>					
+					
+						{% if c.type == 'charge' %}
+						<td class="event-charge">Übercharge</td><td><span class="{{ team_css(l.players[c.steamid].team) if l.players[c.steamid] }}-text">{{ l.names[c.steamid] if l.names[c.steamid] }}</span>
+						{% elif c.type == 'round_win' %}
+						<td>Round end</td><td>Round win for <strong><span class="{{ team_css(c.team) }}-text">{{ c.team }}</span></strong>
+						{% elif c.type == 'medic_death' %}
+						<td class="event-mdeath">Medic Death</td><td><span class="{{ team_css(l.players[c.steamid].team) }}-text">{{ l.names[c.steamid] }}</span> killed by <span class="{{ team_css(l.players[c.killer].team) }}-text">{{ l.names[c.killer] }}</span>
+						{% elif c.type == 'drop' %}
+						<td class="event-mdrop">Dropped über</td><td>{{ l.names[c.steamid] }}
+						{% elif c.type == 'pointcap' %}
+						<td class="event-pointcap">Point Capture</td><td><span class="{{ team_css(c.team) }}-text">{{ c.team }}</span> captured point <strong>{{ c.point }}</strong>
+						{% elif c.type == 'picked up' %}
+						<td>Intel Pickup</td><td>{{ l.names[c.steamid] }} <strong>picked up</strong> Intelligence
+						{% elif c.type == 'dropped' %}
+						<td>Intel Drop</td><td>{{ l.names[c.steamid] }} <strong>dropped</strong> Intelligence
+						{% elif c.type == 'captured' %}
+						<td>Intel Capture</td><td>{{ l.names[c.steamid] }} <strong>captured</strong> Intelligence
+						{% elif c.type == 'defended' %}
+						<td>Defense</td><td>{{ l.names[c.steamid] }} <strong>defended</strong> Intelligence					
+						{% endif %}
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>	
+		
+
+	</td></tr>		
+	{% endfor %}
+</table>					
+{% else %}
+<small>Older logs are currently missing rounds.</small>
+{% endif %}

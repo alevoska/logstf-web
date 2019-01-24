@@ -1,0 +1,115 @@
+<ul class="nav nav-tabs" id="classtab">
+  <li class="active"><a href="#class_k" data-toggle="tab">Kills</a></li>
+  {% if l.version and l.version >= 2 %}<li><a href="#class_ka" data-toggle="tab">Kills+Assists</a></li>{% endif %}
+  <li><a href="#class_d" data-toggle="tab">Deaths</a></li>  
+</ul>
+
+<div class="tab-content">
+<div class="tab-pane active" id="class_k">
+<table class="table log class_stat">		
+	<thead>
+		<tr>
+			<th data-sort-initial-order="asc" class="team">Team</th>
+			<th data-lockedorder="asc">Player</th>
+			<th data-lockedorder="asc">C</th>
+			{% for c in classes %}
+			<th data-lockedorder="desc">{{ classimage(c) }}</th>
+			{% endfor %}
+			<th data-lockedorder="desc">K</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for p in l.classkills if l.players[p] %}
+		{% set community_id = ''~p|community_id %}			
+		<tr{% if community_id == g.user['id'] %} class="highlight"{% endif %}>
+			{% if l.players[p]['team'] == 'Red' %}
+			<td class="red badge">Red</td>
+			{% elif l.players[p]['team'] == 'Blue' %}
+			<td class="blu badge">Blu</td>
+			{% endif %}
+			<td class="log-player-name">{{ l.names[p] }}</td>				
+			<td>
+				{{ classimage(l.players[p].class_stats[0].type, 1) }}
+			</td>
+			{% for c in classes %}
+			<td>{{ l.classkills[p][c]|default('0') }}</td>
+			{% endfor %}
+			<td>{{ l.players[p].kills }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>	
+</div>
+{% if l.version and l.version >= 2 %}
+<div class="tab-pane" id="class_ka">
+<table class="table log class_stat">		
+	<thead>
+		<tr>
+			<th data-sort-initial-order="asc" class="team">Team</th>
+			<th data-lockedorder="asc">Player</th>
+			<th data-lockedorder="asc">C</th>
+			{% for c in classes %}
+			<th data-lockedorder="desc">{{ classimage(c) }}</th>
+			{% endfor %}
+			<th data-lockedorder="desc">KA</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for p in l.classkillassists if l.players[p] %}
+		{% set community_id = ''~p|community_id %}			
+		<tr{% if community_id == g.user['id'] %} class="highlight"{% endif %}>
+			{% if l.players[p]['team'] == 'Red' %}
+			<td class="red badge">Red</td>
+			{% elif l.players[p]['team'] == 'Blue' %}
+			<td class="blu badge">Blu</td>
+			{% endif %}
+			<td class="log-player-name">{{ l.names[p] }}</td>				
+			<td>
+				{{ classimage(l.players[p].class_stats[0].type, 1) }}			
+			</td>
+			{% for c in classes %}
+			<td>{{ l.classkillassists[p][c]|default('0') }}</td>
+			{% endfor %}
+			<td>{{ l.players[p].kills + l.players[p].assists }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>	
+</div>
+{% endif %}
+<div class="tab-pane" id="class_d">
+<table class="table log class_stat">		
+	<thead>
+		<tr>
+			<th data-sort-initial-order="asc" class="team">Team</th>
+			<th data-lockedorder="asc">Player</th>
+			<th data-lockedorder="asc">C</th>
+			{% for c in classes %}
+			<th data-lockedorder="desc">{{ classimage(c) }}</th>
+			{% endfor %}
+			<th data-lockedorder="desc">D</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for p in l.classdeaths if l.players[p] %}
+		{% set community_id = ''~p|community_id %}			
+		<tr{% if community_id == g.user['id'] %} class="highlight"{% endif %}>
+			{% if l.players[p]['team'] == 'Red' %}
+			<td class="red badge">Red</td>
+			{% elif l.players[p]['team'] == 'Blue' %}
+			<td class="blu badge">Blu</td>
+			{% endif %}
+			<td class="log-player-name">{{ l.names[p] }}</td>				
+			<td class="log-classes">
+				{{ classimage(l.players[p].class_stats[0].type, 1) }}			
+			</td>
+			{% for c in classes %}
+			<td>{{ l.classdeaths[p][c]|default('0') }}</td>
+			{% endfor %}
+			<td>{{ l.players[p].deaths }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>	
+</div>
+</div>

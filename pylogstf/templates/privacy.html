@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="log-section">
+<h3>Collection of Information</h3>
+
+<p>We collect and store following information to ensure site functionality:</p>
+<ul>
+	<li>SteamID (when signed in)</li>
+	<li>Public Steam profile data (when signed in)</li>
+	<li>IP address</li>
+	<li>Browser information</li>
+</ul>
+<p>We may use third party services such as Google Analytics for analytics and to collect non-personally identifiable information.</p>
+</div>
+
+<div class="log-section">
+<h3>Cookies</h3>
+<p>We use cookies to store session information for authentication purposes and for remembering user settings. You can opt to disable cookies from your browser's privacy settings.</p>
+</div>
+
+<div class="log-section">
+<h3>Changes to Privacy Policy</h3>
+<p>We reserve the right to modify our Privacy Policy at any time. We will post any Privacy Policy changes on this page.</p>
+</div>
+
+<div class="log-section">
+<h3>Contact us</h3>
+<p>If you have questions about our privacy policy, visit <a href="{{ url_for('pages.about_page') }}#contact">this page.</a></p>
+</div>
+
+{% endblock %}

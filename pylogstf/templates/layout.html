@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns#">
+<head>	
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+<title>{% if title %}{{ title|truncate(50) }} – {% endif %}logs.tf</title>
+<meta name="viewport" content="width=980, initial-scale=1">
+<meta name="description" content="{{ description|default('Team Fortress 2 Competitive Stats') }}">
+<link rel="shortcut icon" href="{{ url_for('static', filename='img/icon.png') }}">	
+
+<script src="{{ url_for('static', filename='js/vendor.js') }}"></script>
+<script src="{{ url_for('static', filename='js/common.js') }}"></script>
+{#<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>#}
+{% block scripts %}{% endblock %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% block styles %}{% endblock %}	
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="http://logs.tf{{ request.path }}">
+<meta property="og:title" content="logs.tf{% if title %} – {{ title|truncate(50) }}{% endif %}">
+<meta property="og:locale" content="en_US">
+<meta property="og:description" content="{{ description|default('Team Fortress 2 Competitive Stats') }}">
+<meta property="og:image" content="http://logs.tf{{ url_for('static', filename='img/logo-social.png') }}">	
+<meta name="twitter:card" content="summary">
+{#<meta name="twitter:site" content="@zoobtf2" />#}
+<meta name="twitter:creator" content="@zoobtf2">
+<meta name="twitter:domain" content="http://logs.tf">
+<meta name="apple-mobile-web-app-title" content="logs.tf">
+</head>
+<body>
+<div class="topbar">
+    <nav class="navbar container">
+        <div class="logo"><a href="{{ url_for('lists.front_page') }}"><img src="{{ url_for('static', filename='img/logo-top.png') }}" alt="logs.tf" title="logs.tf"></a></div>
+        <div class="navbar-search">
+            <form action="{{ url_for('search.search_player') }}" method="get">
+                <input id="player-search" type="text" name="s" placeholder="Player name or SteamID&#8230;" maxlength="60">
+            </form>
+        </div>
+        <div class="menu">						
+            {% if not g.user %}
+            <a href="{{ url_for('auth.steam_auth') }}"><img src="{{ url_for('static', filename='img/sits_small.png') }}" alt="Sign in through Steam"></a>
+            {% else %}
+            <a href="{{ url_for('lists.steamid_matches', steamid64=g.user['id']) }}" class="btn">Profile</a>
+            <a href="{{ url_for('pages.uploader') }}" class="btn btn-success">Upload</a>
+            {% endif %}
+        </div>	
+    </nav>
+</div>
+
+<div class="container main">
+    {#<div style="margin: 0px -30px; border-bottom: 1px solid #E0EDED" id="promo"><a href="https://www.twitch.tv/essentialstf"><img src="{{ url_for('static', filename='img/i61-promo.png') }}" width="980" height="57"></a></div>#}
+    {% include 'partials/ad.html' ignore missing %}
+    <div id="messages">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}    
+        {% for message in messages %}
+        <div class="alert"><button type="button" class="close" data-dismiss="alert">×</button>{{ message }}</div>
+        {% endfor %}    
+        {% endif %}
+        {% endwith %}		
+        {% include 'notifications.html' ignore missing %}
+    </div>
+    <div class="content">
+    {% block content %}{% endblock %}
+    </div>
+    <footer class="container footer">
+        <ul class="nav nav-pills">				
+            <li><a href="{{ url_for('pages.about_page') }}">About &amp; Help</a></li>
+            <li><a href="{{ url_for('pages.privacy_page') }}">Privacy</a></li>
+            <li><a href="{{ url_for('pages.about_page') }}#json">API</a></li>
+        </ul>
+        <hr>
+        <p class="center">Team Fortress, the Team Fortress logo, Steam, the Steam logo are trademarks and/or registered trademarks of Valve Corporation.
+        <br>&copy; <a href="{{ url_for('pages.about_page') }}#contact">logs.tf</a> 2018. Powered by <a href="http://steampowered.com">Steam</a>.
+        </p>
+    </footer>
+</div>
+{% include 'partials/analytics.html' ignore missing %}
+</body>
+</html>

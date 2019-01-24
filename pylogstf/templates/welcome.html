@@ -1,0 +1,43 @@
+<div class="welcome">
+<div class="welcome-info">
+	<h1>Competitive Team Fortress 2 Stats</h1>
+    <p>Automatically generated stats from server logs</p>
+</div>
+<div class="welcome-stats">	
+	<div class="stat">
+		<span class="stat-title">Players</span>
+		<span class="stat-value">{{ player_count|number_format }}</span>
+	</div>
+	<div class="stat">
+		<span class="stat-title">Matches</span>
+		<span class="stat-value">{{ pagination.total|number_format }}</span>
+	</div>
+</div>
+{#<div class="hype">
+	<span class="stat-title"><a href="http://etf2l.org/2016/08/27/announcing-season-25-powered-by-tt-esportsschedule-signups-open/">ETF2L S25 Signups End</a></span>	
+	<span class="stat-value" id="countdown"></span>
+</div>#}
+</div>
+{#<script>
+(function() {
+    var el = document.getElementById('countdown');
+    var startDate = Date.parse('Thu, 15 Sep 2016 19:00:00 UTC');
+    function updateCountdown() {
+        var nowDate = new Date();
+        var diff = Math.floor((startDate - nowDate) / 1000);
+
+        if (diff > 0) {
+            var days = Math.floor(diff / 86400);
+            var hours = '0' + Math.floor((diff % 86400) / 3600).toString();
+            var minutes = '0' + Math.floor((diff % 3600) / 60).toString();
+            var seconds = '0' + Math.floor((diff % 60)).toString();
+            el.innerHTML = '<a href="http://etf2l.org/2016/08/27/announcing-season-25-powered-by-tt-esportsschedule-signups-open/">' + days + 'd ' + hours.slice(-2) + 'h ' + minutes.slice(-2) + 'm ' + seconds.slice(-2) + 's</a>';
+        } else {
+            el.innerHTML = '<a href="http://etf2l.org/2016/08/27/announcing-season-25-powered-by-tt-esportsschedule-signups-open/">-</a>';
+        }
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+})();
+</script>#}

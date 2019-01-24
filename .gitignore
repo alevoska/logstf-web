@@ -1,0 +1,7 @@
+.vscode/
+.mypy_cache/
+logs/
+temp/
+misc/
+pylogstf/config.py
+*.pyc

@@ -1,0 +1,166 @@
+{% macro classimage(c, opacity=1.0) -%}
+{% if c in classes -%}<i class="{{ c }}" data-order="{{ classes.index(c) }}" style="opacity: {{ '%0.1f' % opacity }}"></i>{% endif %}
+{%- endmacro %}
+{% macro team_css(team) -%}
+{% if team == 'Blue' %}blu{% elif team == 'Red' %}red{% endif %}
+{%- endmacro %}
+
+<div id="log-header" class="log-header log-header-primary">	
+	<div class="log-header-left">
+		<h3 id="log-name">{{ name }}</h3>
+		{% if tf2map %}<h3 id="log-map">{{ tf2map }}</h3>{% endif %}	
+		<h3 id="log-length">{{ l.info.total_length|mmss }}</h3>
+	</div>
+	<div class="log-header-right">
+		<h3 id="log-uploader"><a href="{{ url_for('lists.steamid_uploads', steamid64=uid) }}">{{ uploader }}{% if uploader_desc %} ({{ uploader_desc }}){% endif %}</a></h3>
+		<h3 id="log-date"><span class="datefield" data-timestamp="{{ date }}">{{ date|datetime }}</h3>
+		<a href="#settings" class="btn tip" id="log-settings" data-toggle="modal" role="button"><i class="icon-wrench"></i></a>
+	</div>
+	{% if not l.info.supplemental %}
+	<p class="log-notification"><a href="{{ url_for('pages.about_page') }}#tftrue">Missing plugin for extended stats</a></p>
+	{% endif %}
+	{% for notification in l.info.notifications if l.info.notifications %}
+		<p class="log-notification">
+			{% if notification == 'old_sourcemod' %}To fix accuracy stats, <a href="/about#smfix">upgrade SourceMod</a>{% endif %}
+		</p>
+	{% endfor %}		
+</div>
+
+<div id="log-score" class="score-container">
+	<div class="score blu"><h1 class="pull-left">BLU</h1><h1 class="pull-right">{{ l.teams.Blue.score if l.teams else l.info.Blue.score }}</h1></div>
+	<div class="score red"><h1 class="pull-left">{{ l.teams.Red.score if l.teams else l.info.Red.score  }}</h1><h1 class="pull-right">RED</h1></div>
+</div>
+
+
+<div class="log-section" id="log-section-players">
+{% include 'log/players.html' %}
+</div>
+<div class="log-section" id="log-section-teams">
+{% if l.teams %}
+<table id="teams" class="log table">
+	<thead>
+		<tr>
+			<th class="team">Team</th>
+			<th><span class="tip" title="Kills">Kills</span></th>
+			{% if l.info.supplemental %}<th><span class="tip" title="Damage">Damage</span></th>{% endif %}
+			<th><span class="tip" title="Ubercharges">Charges</span></th>
+			{% if l.version and l.version >= 2 %}<th><span class="tip" title="Ubers dropped">Drops</span></th>{% endif %}
+			{% if l.info.hasCP %}<th><span class="tip" title="Captures">Caps</span></th>{% endif %}
+			{% if l.info.hasCP %}<th><span class="tip" title="1st Captures">Midfights</span></th>{% endif %}
+		</tr>
+	</thead>
+	<tbody>
+	{% for t in l.teams %}
+		<tr>
+			{% if t == 'Red' %}<td class="red">Red</td>{% else %}<td class="blu">Blu</td>{% endif %}
+			<td>{{ l.teams[t].kills }}</td>			
+			{% if l.info.supplemental %}<td>{{ l.teams[t].dmg }}</td>{% endif %}
+			<td>{{ l.teams[t].charges }}</td>
+			{% if l.version and l.version >= 2 %}<td>{{ l.teams[t].drops }}</td>{% endif %}
+			{% if l.info.hasCP %}<td>{{ l.teams[t].caps }}</td>{% endif %}
+			{% if l.info.hasCP %}<td>{{ l.teams[t].firstcaps }}</td>{% endif %}
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+
+{% endif %}
+</div>
+<div class="log-section" id="log-section-rounds">
+{% include 'log/rounds.html' %}	
+</div>
+<div class="log-section" id="log-section-healspread">
+{% include 'log/healspread.html' %}
+</div>
+<div class="log-section" id="log-section-cvc">
+{% include 'log/classkills.html' %}
+</div>
+<div class="log-section" id="log-section-footer">
+<ul class="nav nav-pills" id="log-footer">
+	<li><a href="#showchat" data-toggle="modal" role="button">Show Chat</a></li>
+	{% if l.killstreaks %}<li><a href="#showstreaks" data-toggle="modal" role="button">Show Killstreaks ({{ l.killstreaks|length }})</a></li>{% endif %}
+	<li><a href="/logs/log_{{ id }}.log.zip">Download log</a></li>	
+</ul>
+</div>
+
+
+<div id="showstreaks" class="modal hide" role="dialog">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">×</button>
+		<h3>Killstreaks</h3>
+	</div>		
+	<div class="modal-body">			
+		{% if l.killstreaks %}
+		<table id="killstreaks" class="log table">
+			<thead>
+				<tr>
+					<th>Time</th>
+					<th>Tick</th>
+					<th>Player</th>
+					<th>Streak</th>
+				</tr>	
+			</thead>
+			<tbody>
+			{% for s in l.killstreaks %}
+				<tr{% if s.streak < 4%} class="lostreak"{% endif %}>
+					<td>{{ s.time|mmss }}</td>
+					<td>{{ s.time * 66 }}</td>
+					<td>{{ l.names[s.steamid] }}</td>
+					<td>{{ s.streak }}</td>
+				</tr>	
+			{% endfor %}
+			</tbody>
+		</table>
+		{% else %}None found.{% endif %}
+	</div>
+</div>
+
+<div id="showchat" class="modal hide" role="dialog">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">×</button>
+		<h3>In-game Chat</h3>
+	</div>		
+	<div class="modal-body">			
+		<table id="chat" class="log table">
+		{% if l.chat %}
+			{% for c in l.chat %}
+			<tr>
+				{%- if l.players[c.steamid] -%}
+					{% if l.players[c.steamid]['team'] == 'Red' %}<td class="red team">Red</td>{% else %}<td class="blu team">Blu</td>{% endif %}
+				{% else %}<td></td>
+				{% endif %}
+				
+				<td class="chat-name">{{ c.name }}</td><td class="chat-text">{{ c.msg }}</td></tr>
+			{% endfor %}
+		{% endif %}
+		</table>
+	</div>
+</div>
+
+<div id="settings" class="modal modal-small hide" role="dialog">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">×</button>
+		<h3>Change default settings</h3>
+	</div>		
+	<div class="modal-body">	
+		<div class="log-form">
+			<div class="control-group">			
+				<label class="control-label">Default order</label>
+				<div class="control-controls">
+					<select id="sortselect" onchange="setCookie('tablesort', this.value, 365);">
+						<option value="default">Team &amp; Class (Default)</option>
+						<option value="da">Damage</option>
+						<option value="tda">Team &amp; Damage</option>
+						<option value="k">Kills</option>
+						<option value="kad">KA/D</option>
+						<option value="kd">K/D</option>
+					</select>
+				</div>			
+			</div>
+			<div class="control-group">
+				<label class="control-label">Force team order</label>
+				<div class="control-controls"><input type="checkbox" id="force_team_sort"></div>
+			</div>
+		</div>
+	</div>
+</div>

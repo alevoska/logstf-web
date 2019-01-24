@@ -1,0 +1,171 @@
+<script>
+$(document).ready(function () {
+	location.hash && $(location.hash + '.collapse').collapse('show');
+});
+</script>
+<div class="log-section">
+	<h3 id="plugins">Automated upload: TF2 Server plugins</h3>
+	<div class="accordion" id="accordion1">
+		<div class="accordion-group">
+			<div class="accordion-heading">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#tftrue">
+					<strong>TFTrue</strong> by AnAkkk<div class="pull-right"><span class="label label-default">Logs.tf Spec 2.1</span></div>
+				</a>
+			</div>
+			<div id="tftrue" class="accordion-body collapse">
+				<div class="accordion-inner">
+					<h5>How to install</h5>
+					<ol>
+						<li>Download the plugin and extract it into temporary location.</li>
+						<li>Most servers have FTP access into TF2 directory. Check your server control panel for info. Open Windows Explorer and point it to provided IP address, e.g. ftp://180.0.0.0</li>
+						<li>Upload the files to /tf/addons/ on the server.</li>
+						<li>Generate Logs.tf API key on upload page. Add 'tftrue_logs_apikey APIKEYHERE' to /tf/cfg/server.cfg on the server and restart.</li>
+						<li>Add 'tftrue_logs_roundend 1' to enable updating of logs after every round.</li>
+						<li>Type <i>!log</i> in chat to view the last log ingame.</li>
+					</ol>
+					<p><a href="http://tftrue.esport-tools.net/TFTrue.zip" class="btn btn-primary">Download</a> <a href="http://tftrue.esport-tools.net/" class="btn">Documentation</a></p>
+				</div>
+			</div>
+		</div>
+		<div class="accordion-group">
+			<div class="accordion-heading">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#logstf">
+					<strong>LogsTF/SupStats2/MedicStats</strong> by F2<div class="pull-right"><span class="label label-default">SourceMod required</span> <span class="label label-default">Logs.tf Spec 2.1</span></div>
+				</a>
+			</div>
+			<div id="logstf" class="accordion-body collapse">
+				<div class="accordion-inner">
+					<h5>How to install</h5>
+					<ol>
+						<li>These plugins require SourceMod. If your server provider does not provide installation from control panel, you can <a href="http://wiki.alliedmods.net/Installing_SourceMod">install it manually</a>.</li>
+						<li><strong>LogsTF</strong> auto-uploads the logs, <strong>SupStats2</strong> and <strong>MedicStats</strong> provide more detailed stats and <strong>Updater</strong> automatically keeps plugins up-to-date. Also <strong>cURL extension</strong> is needed. <a href="http://teamfortress.tv/forum/thread/13598-medicstats-sourcemod-plugin/1#post-1">Download all of them from here.</a></li>
+						<li>Extract plugin files into temporary location.</li>
+						<li>Most servers have FTP access into TF2 directory. Check your server control panel for info. Open Windows Explorer and point it to provided IP address, e.g. ftp://180.0.0.0</li>
+						<li>Upload .smx files to /tf/addons/sourcemod/plugins/. Upload cURL extension files to /tf/addons/sourcemod/ with its directory structure intact.</li>
+						<li>Generate Logs.tf API key on upload page. Add 'logstf_apikey APIKEYHERE' to /tf/cfg/server.cfg on the server and restart. You can also add 'logstf_midgameupload 1' for updating logs after every round.</li>
+						<li>Type <i>!log</i> in chat to view the last log ingame.</li>
+					</ol>
+					<p><a href="http://teamfortress.tv/forum/thread/13598-medicstats-sourcemod-plugin/1#post-1" class="btn btn-primary">Download</a></p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<p>These plugins automatically upload logs after matches and allow viewing them ingame.</p>
+</div>
+<div class="log-section">
+	<h3 id="help">Help</h3>
+	<div class="accordion" id="accordion2">
+		<div class="accordion-group">
+			<div class="accordion-heading">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#howtoupload">
+					<strong>Uploader:</strong> How to retrieve log files from server manually and upload them
+				</a>
+			</div>
+			<div id="howtoupload" class="accordion-body collapse">
+				<div class="accordion-inner">
+					<h5>1. Access logs directory of your TF2 server</h5>
+					<ul>
+						<li>Most servers have FTP access to TF2 directory. Check your server control panel for info.</li>
+						<li>Open Windows Explorer and point it to provided IP address, e.g. ftp://180.0.0.0</li>
+						<li>Navigate to /orangebox/tf/logs. Directory structure may vary by server provider.</li>
+						<li>(Make a shortcut to access logs quickly!)</li>
+					</ul>
+
+					<h5>2. Copy relevant log files into your hard drive</h5>
+					<ul>
+						<li>Sort by date modified to easily find newest logs.</li>
+						<li>Proper logs are usually way over 100 KB.</li>
+						<li>Copy files you want to upload on your hard disk drive.</li>
+					</ul>
+					<h5>3. Upload to logs.tf</h5>
+				</div>
+			</div>
+		</div>
+
+		<div class="accordion-group">
+			<div class="accordion-heading">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#dragdrop">
+					<strong>Uploader:</strong> Drag and drop files
+				</a>
+			</div>
+			<div id="dragdrop" class="accordion-body collapse">
+				<div class="accordion-inner">
+					You can drag and drop log files anywhere on upload page to add logs.
+				</div>
+			</div>
+		</div>
+		<div class="accordion-group">
+			<div class="accordion-heading">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#apidev">
+					<strong>API:</strong> File upload
+				</a>
+			</div>
+			<div id="apidev" class="accordion-body collapse">
+				<div class="accordion-inner">
+					<p>To upload logs, make a multipart/form-data POST request to http://logs.tf/upload. Use these fields:</p>
+					<table class="table">
+						<tr><td>title</td><td>Title of your log. Max length 40 chars.</td></tr>
+						<tr><td>map</td><td>TF2 map. Optional. Max length 24 chars.</td></tr>
+						<tr><td>key</td><td>Your unique key, see "Logs.tf API key" on upload page.</td></tr>
+						<tr><td>logfile</td><td>Log file. Max 5 MB.</td></tr>
+						<tr><td>uploader</td><td><span class="label label-default">Optional</span> Name of the uploading plugin or software (including version). Max length 40 chars.</td></tr>
+						<tr><td>updatelog</td><td><span class="label label-default">Optional</span> Log ID to update instead of uploading a new log.</td></tr>
+					</table>
+					<p>Response is JSON with these fields:</p>
+					<table class="table">
+						<tr><td>success</td><td>True / False</td></tr>
+						<tr><td>error</td><td>Description of possible error.</td></tr>
+						<tr><td>log_id</td><td>ID of the log on successful upload.</td></tr>
+						<tr><td>url</td><td>Relative path to the log. e.g. /5100</td></tr>
+					</table>
+					<p>For more information, add <a href="http://steamcommunity.com/id/zooob/">zooob</a> on Steam.</p>
+				</div>
+			</div>
+		</div>
+		<div class="accordion-group">
+			<div class="accordion-heading">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#json">
+					<strong>API:</strong> Log data &amp; search
+				</a>
+			</div>
+			<div id="json" class="accordion-body collapse">
+				<div class="accordion-inner">
+					<h3>Log data API</h3>
+					<p>Access raw JSON data of logs: <strong>http://logs.tf/api/v1/log/&lt;log_id&gt;</strong> OR <strong>http://logs.tf/json/&lt;log_id&gt;</strong>.</p>
+					<h3>Log search API</h3>
+					<p>Access JSON list of logs: <strong>http://logs.tf/api/v1/log?title=X&amp;uploader=Y&amp;player=Z&amp;limit=N&amp;offset=N</strong></p>
+					{#<p>Access JSON list of logs: http://logs.tf/json_search?title=X&amp;uploader=Y&amp;player=Z&amp;limit=N</p>#}
+					<p>Any of these fields can be combined together or omitted.</p>
+					<p>Results are always ordered by log id descending.</p>
+					<p>Example of comma-separated SteamIDs: 76561197987681768,76561197996199110</p>
+					<table class="table">
+						<tr><td>title</td><td><span class="label label-default">Optional</span> Title text search (min. 2 characters)</td></tr>
+						<tr><td>map</td><td><span class="label label-default">Optional</span> Exact name of a map</td></tr>
+						<tr><td>uploader</td><td><span class="label label-default">Optional</span> Uploader SteamID64</td></tr>
+						<tr><td>player</td><td><span class="label label-default">Optional</span> One or more player SteamID64 values, comma-separated</td></tr>
+						<tr><td>limit</td><td><span class="label label-default">Optional</span> Limit results (default 1000, maximum 10000)</td></tr>
+						<tr><td>offset</td><td><span class="label label-default">Optional</span> Offset results (default 0)</td></tr>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="accordion-group">
+			<div class="accordion-heading">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#spec">
+					<strong>DEV:</strong> Logs.tf Spec + version history
+				</a>
+			</div>
+			<div id="spec" class="accordion-body collapse">
+				<div class="accordion-inner">
+					<p>Describes a set of additional stats that TF2 server plugin may implement. <a href="https://github.com/zooob/logstf-spec">Spec on GitHub</a>.</p>
+					<h5>History</h5>
+					<ul class="unstyled">
+						<li><span class="label label-primary">1.0</span> Original supstats.smx features + healing with buffs</li>
+						<li><span class="label label-primary">2.0</span> Damage targets, charge with medigun type, medic stats, medkit pickup with real healing amount</li>
+						<li><span class="label label-primary">2.1</span> Weapon accuracies</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

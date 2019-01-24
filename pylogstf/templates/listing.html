@@ -1,0 +1,106 @@
+{% macro gamemode(num) -%}
+{% if num is number %}
+{% if num > 17 %}Highlander{% elif num > 11 %}6v6{% elif num == 4 %}Ultiduo/BBall{% else %}{{ num }} players{% endif %}
+{% endif %}
+{%- endmacro %}
+{% macro logout() %}
+<a href="/logout?t={{ g.token}}" class="logout">(Sign out)</a>
+{%- endmacro %}
+{% if front_page %}{% include 'welcome.html' %}{% endif %}
+{% if pagination %}
+{% if title %}<div class="log-header"><h3>{% if avatar %}<img class="avatar" src="{{ avatar }}">{% endif %}{{ title }}{% if g.user and player_id|string() == g.user['id'] %} {{ logout() }}{% endif %}</h3></div>{% endif %}
+<div class="controls">
+	{% if not player_id %}
+	<div class="pull-left">
+			<form action="{{ url_for('search.search_log') }}" method="get">
+				<input id="log-search" type="text" name="s" placeholder="Search for logs&#8230;">
+			</form>
+	</div>
+	{% endif %}
+	{% if controls %}
+	<div class="pull-right">
+		<a href="{{ url_for('lists.front_page') }}" class="btn{% if recent %} btn-primary{% endif %}">Recent</a>
+		<div class="btn-group">
+			<a class="btn dropdown-toggle{% if popular %} btn-primary{% endif %}" href="#" data-toggle="dropdown">Popular <span class="caret"></span></a>
+			<ul class="dropdown-menu">
+				<li><a href="{{ url_for('lists.popular', period='week') }}">Week</a></li>
+				<li><a href="{{ url_for('lists.popular', period='month') }}">Month</a></li>
+				<li><a href="{{ url_for('lists.popular', period='all') }}">All time</a></li>
+				<li class="divider"></li>
+				<li><a href="{{ url_for('lists.popular', period='3days') }}">3 Days</a></li>
+				<li><a href="{{ url_for('lists.popular', period='3months') }}">3 Months</a></li>
+			</ul>
+		</div>
+	</div>
+	{% endif %}
+	{% if player_id %}
+	<ul class="nav nav-pills pull-left">
+		<li><a href="http://steamcommunity.com/profiles/{{ player_id }}">Steam</a></li>
+		<li><a href="http://etf2l.org/search/{{ player_id }}">ETF2L</a></li>
+		<li><a href="http://www.ugcleague.com/players_page.cfm?player_id={{ player_id }}">UGC</a></li>
+		<li><a href="http://tf2center.com/profile/{{ player_id }}">TF2Center</a></li>
+		<li><a href="http://warzone.ozfortress.com/users/steam_id/{{ player_id }}">ozfortress</a></li>
+		<li><a href="http://rgl.gg/Public/PlayerProfile.aspx?p={{ player_id }}">RGL</a></li>
+	</ul>
+	<div class="btn-group pull-right">
+		<a href="{{ url_for('lists.steamid_matches', steamid64=player_id) }}" class="btn{% if matches %} btn-primary{% endif %}">Matches</a>
+		<a href="{{ url_for('lists.steamid_uploads', steamid64=player_id) }}" class="btn{% if uploads %} btn-primary{% endif %}">Uploads</a>
+	</div>
+	{% endif %}
+</div>
+
+<div class="clear">
+
+{% if pagination.items %}
+<table class="table loglist">
+	<thead><tr><th>Title</th><th>Map</th><th style="width: 100px" class="center">Format</th><th style="width: 50px" class="center">Views</th><th style="width: 155px">Date</th>{% if edit %}<th></th>{% endif %}
+	</tr></thead>
+	<tbody>
+		{%- for l in pagination.items %}
+		<tr id="log_{{ l.id }}">
+			{% if not edit %}
+			<td><a href="/{{ l.id }}{% if player_id %}#{{ player_id }}{% endif %}">{{ l.logname }}</a></td><td>{{ l.tf2map }}</td><td class="center">{{ gamemode(l.player_count) }}</td><td class="center">{{ l.views }}</td><td class="datefield" data-timestamp="{{ l.date }}">{{ l.date|datetime }}</td>
+			{% else %}
+			<td><input type="text" value="{{ l.logname }}" id="title_{{ l.id }}" maxlength="40"></td>
+			<td><input type="text" class="input-small" id="map_{{ l.id }}" value="{{ l.tf2map }}" maxlength="24"></td>
+			<td class="center">{{ gamemode(l.player_count) }}</td>
+			<td class="center">{{ l.views }}</td><td class="datefield" data-timestamp="{{ l.date }}">{{ l.date|datetime }}</td>
+			<td class="center">
+				<a href="{{ url_for('view.view_log', log_id=l.id) }}" class="btn btn-mini">View</a>
+				<a href="#" class="btn btn-mini edit_update" data-logid="{{ l.id }}">Update</a>
+				<a href="#" class="btn btn-mini btn-danger edit_delete" data-logid="{{ l.id }}">Delete</a>
+				{% if admin %}
+				<a href="#" class="btn btn-mini edit_resetviews" data-logid="{{ l.id }}">Reset Views</a>
+				{% endif %}
+			</td>
+				{% endif %}
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+	<div class="pagination">
+		<ul>
+			{%- for page in pagination.iter_pages() %}
+			{% if page %}
+			{% if page != pagination.page %}
+			<li><a href="{{ request.path }}?p={{ page }}{% if search %}&s={{ search|urlencode }}{% endif %}">{{ page }}</a></li>
+			{% else %}
+			<li><span><strong>{{ page }}</strong></span></li>
+			{% endif %}
+			{% else %}
+			<li><span class="ellipsis">…</span></li>
+			{% endif %}
+			{%- endfor %}
+		</ul>
+	</div>
+	<p>{{ pagination.total|number_format }} results</p>
+
+
+	{% else %}
+	<h5>No logs found.</h5>
+	{% endif %}
+
+{% endif %}
+</div>
+{% if edit %}{% include 'edit.html' %}{% endif %}

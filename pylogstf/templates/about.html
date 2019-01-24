@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/icons.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="log-section">
+	<h3 id="about">About</h3>
+	<p>Logs.tf is a Team Fortress 2 log parser and stats generator. It was publicly released in November 2012.</p>
+	<p>It is currently the most popular competitive stats website for Team Fortress 2, with tens of thousands of players checking the site each month.</p>
+</div>
+<div class="log-section">
+	<h3>Support</h3>
+	<ul>		
+		<li><a href="http://www.teamfortress.tv/2934/">Teamfortress.tv Thread</a></li>
+		<li><a href="http://steamcommunity.com/groups/logstf/discussions">Logs.tf Steam Group (inactive)</a></li>
+	</ul>
+</div>
+<div class="log-section">
+	<h3 id="contact">Contact</h3>
+	<ul><li>
+		<h4>zoob</h4>
+		<p>Founder, developer and maintainer of logs.tf.</p>
+		<p>For support requests, please visit one of our forums above instead.</p>	
+		<ul class="nav nav-pills">
+			<li><a href="mailto:zoob@logs.tf"><i class="social-mail"></i> Email</a></li>
+			<li><a href="https://twitter.com/zoobtf2"><i class="social-twitter"></i> Twitter</a></li>		
+			<li><a href="http://www.teamfortress.tv/inbox/compose/zooob">teamfortress.tv</a></li>
+		</ul>
+	</li></ul>
+	
+</div>
+<div class="log-section">
+	<h3>Logs.tf API key</h3>
+	<p>To retrieve your API key, visit <a href="/uploader">Upload logs</a> page when logged in. This key is used for uploading logs from TF2 server plugins and other uploaders.</p>
+</div>
+{% include 'help.html' %}
+{% endblock %}

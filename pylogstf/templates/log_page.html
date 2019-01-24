@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/vendor/jquery.tablesorter.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/log.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+{{ log|safe }}
+{% endblock %}

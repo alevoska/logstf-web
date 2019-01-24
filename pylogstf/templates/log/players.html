@@ -1,0 +1,87 @@
+<table class="table log" id="players">
+	<thead>
+		<tr>
+			<th class="players-team" data-lockedorder="asc"><span class="tip" title="Sort by team">Team</span></th>
+			<th class="players-name" data-lockedorder="asc"><span class="tip" title="Sort by name">Name</span></th>
+			<th class="players-class" data-lockedorder="asc"><span class="tip" title="Sort by class">C</span></th>
+			<th data-lockedorder="desc"><span class="tip" title="Kills">K</span></th>
+			<th data-lockedorder="desc"><span class="tip" title="Assists">A</span></th>
+			<th data-lockedorder="desc"><span class="tip" title="Deaths">D</span></th>
+			{% if l.info.hasKS %}<th data-lockedorder="desc"><span class="tip" title="Longest Kill Streak">KS</span></th>{% endif %}
+			{% if l.info.supplemental %}
+			<th data-lockedorder="desc"><span class="tip" title="Damage">DA</span></th>			
+			<th data-lockedorder="desc"><span class="tip" title="Damage / Minute">DA/M</span></th>
+			{% endif %}
+			<th data-lockedorder="desc"><span class="tip" title="Kills and Assists / Death">KA/D</span></th>
+			<th data-lockedorder="desc"><span class="tip" title="Kills / Death">K/D</span></th>						
+			{% if l.info.hasDT %}<th data-lockedorder="desc"><span class="tip" title="Damage taken">DT</span></th>{% endif %}			
+            {% if l.info.hasDT %}<th data-lockedorder="desc"><span class="tip" title="Damage taken / Minute">DT/M</span></th>{% endif %}
+			{#{% if l.info.hasHR %}<th data-lockedorder="desc"><span class="tip" title="Healing received / Minute">HR/M</span></th>{% endif %}#}
+			{#<th data-lockedorder="desc"><span class="tip" title="Healing given">H</span></th>#}			
+			{% if l.info.hasHP %}<th data-lockedorder="desc"><span class="tip" data-html="true" title="Health pickups<br>Small +1<br>Medium +2<br>Large +4">HP</span></th>{% endif %}			
+			{% if l.info.hasBS %}<th data-lockedorder="desc"><span class="tip" title="Backstabs">BS</span></th>{% endif %}
+			{% if l.info.hasHS_hit %}<th data-lockedorder="desc"><span class="tip" title="Headshots">HS</span></th>{% endif %}
+			{% if l.info.hasHS and not l.info.hasHS_hit %}<th data-lockedorder="desc"><span class="tip" title="Headshot kills">HSK</span></th>{% endif %}
+			{% if l.info.hasAS %}<th data-lockedorder="desc"><span class="tip" title="AIRSHOTS">AS</span></th>{% endif %}
+			{% if l.info.hasSB %}<th data-lockedorder="desc"><span class="tip" title="Sentries built">SB</span></th>{% endif %}
+			{% if l.info.hasCP %}<th data-lockedorder="desc"><span class="tip" title="Capture Point Captures">CAP</span></th>{% endif %}			
+			{% if l.info.hasIntel %}<th data-lockedorder="desc"><span class="tip" title="Intels Captured">IC</span></th>{% endif %}
+		</tr>
+	</thead>	
+	<tbody>
+		{% for p in l.players -%}	
+		{% set community_id = p|community_id|string() %}
+		<tr id="player_{{ community_id }}">
+		{% if l.players[p]['team'] == 'Red' %}<td class="red badge">Red</td>{% else %}<td class="blu badge">Blu</td>{% endif %}
+		<td class="log-player-name">				
+			<div class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ l.names[p] }}</a>
+				<ul class="dropdown-menu" role="menu">
+					<li role="menuitem"><a href="{{ url_for('lists.steamid_matches', steamid64=community_id) }}">Matches</a></li>
+					<li role="menuitem"><a href="{{ url_for('lists.steamid_uploads', steamid64=community_id) }}">Uploads</a></li>
+					<li role="menuitem"><a href="http://steamcommunity.com/profiles/{{ community_id }}">Steam</a></li>
+					<li role="menuitem"><a href="http://etf2l.org/search/{{ community_id }}">ETF2L</a></li>
+					<li role="menuitem"><a href="http://www.ugcleague.com/players_page.cfm?player_id={{ community_id }}">UGC</a></li>
+                    <li role="menuitem"><a href="http://tf2center.com/profile/{{ community_id }}">TF2Center</a></li>
+					<li role="menuitem"><a href="http://warzone.ozfortress.com/users/steam_id/{{ community_id }}">ozfortress</a></li>
+					<li role="menuitem"><a href="http://rgl.gg/Public/PlayerProfile.aspx?p={{ community_id }}">RGL</a></li>
+				</ul>
+			</div>				
+		</td>
+		<td class="log-classes classes">
+			{% if l.version and l.version >= 2 %}
+			{% for c in l.players[p].class_stats -%}
+			{% if c.type in classes -%}{% set opacity = c.total_time / (l.info.total_length + 0.1) + 0.4 %}<i class="classicon {{ c.type }}" data-order="{{ classes.index(c.type) }}" style="opacity: {{ '%0.1f' % opacity }}" data-title="{{ c.type.capitalize() }}" data-content="<table class='log table'><thead><tr><th>Played</th><th>K</th><th>A</th><th>D</th><th>DA</th></tr></thead><tbody><tr><td>{{ c.total_time|mmss }}</td><td>{{ c.kills }}</td><td>{{ c.assists }}</td><td>{{ c.deaths }}</td><td>{{ c.dmg }}</td></tr></table>{% if c.weapon %}<hr><table class='log table'><thead><tr><th>Weapon</th><th>K</th><th>DA</th>{% if l.info.hasAccuracy %}<th>Acc</th>{% endif %}</tr></thead><tbody>{% for w in c.weapon|weaponsort %}<tr><td>{{ w[0]|weapon }}</td><td>{{ w[1]['kills'] }} {% if l.players[p]['kills'] %}({{ (w[1]['kills'] / l.players[p]['kills'] * 100)|int }}%){% endif %}</td><td>{{ w[1]['dmg'] }} {% if l.players[p]['dmg'] %}({{ (w[1].dmg / l.players[p]['dmg'] * 100)|int }}%){% if l.info.hasAccuracy %}<td>{{ (w[1]['hits'] / w[1]['shots'] * 100)|int|string + '%' if w[1]['shots'] else '-' }}</td>{% endif %}{% endif %}</td></tr>{% endfor %}</tbody></table>{% endif %}"></i>{% endif %}
+			{%- endfor %}
+			{% else %}
+			{% for c in l.players[p].class_stats -%}
+			{% if c.type in classes -%}{% set opacity = c.total_time / (l.info.total_length + 0.1) + 0.4 %}<i class="classicon {{ c.type }}" data-order="{{ classes.index(c.type) }}" style="opacity: {{ '%0.1f' % opacity }}" data-title="{{ c.type.capitalize() }}" data-content="<table class='log table'><thead><tr><th>Played</th><th>K</th><th>A</th><th>D</th><th>DA</th></tr></thead><tbody><tr><td>{{ c.total_time|mmss }}</td><td>{{ c.kills }}</td><td>{{ c.assists }}</td><td>{{ c.deaths }}</td><td>{{ c.dmg }}</td></tr></table>{% if c.weapon %}<hr><table class='log table'><thead><tr><th>Weapon</th><th>K</th></tr></thead><tbody>{% for w in c.weapon|dictsort %}<tr><td>{{ w[0]|weapon }}</td><td>{{ w[1] }} ({{ (w[1] / l.players[p]['kills'] * 100)|int if l.players[p]['kills'] }}%)</td></tr>{% endfor %}</tbody></table>{% endif %}"></i>{% endif %}
+			{%- endfor %}		
+			{% endif %}	
+		</td>
+		<td>{{ l.players[p]['kills'] }}</td>
+		<td>{{ l.players[p]['assists'] }}</td>
+		<td>{{ l.players[p]['deaths'] }}</td>
+		{% if l.info.hasKS %}<td>{{ l.players[p]['lks'] }}</td>{% endif %}
+		{% if l.info.supplemental -%}
+		<td>{{ l.players[p]['dmg'] }}</td>				
+		<td>{{ l.players[p]['dapm'] }}</td>		
+		{%- endif %}		
+		<td>{{ l.players[p]['kapd'] }}</td>
+		<td>{{ l.players[p]['kpd'] }}</td>		
+		{% if l.info.hasDT %}<td>{{ l.players[p]['dt'] }}</td>{% endif %}
+        {% if l.info.hasDT %}<td>{{ (l.players[p]['dt'] / l.info.total_length*60)|int }}</td>{% endif %}
+		{#<td>{{ l.players[p]['heal'] }}</td>#}
+		{#{% if l.info.hasHR %}<td>{{ ((l.players[p]['hr']) / l.info.total_length*60)|int }}</td>{% endif %}#}		
+		{% if l.info.hasHP %}<td>{{ l.players[p]['medkits'] }}</td>{% endif %}
+		{% if l.info.hasBS %}<td>{{ l.players[p]['backstabs'] }}</td>{% endif %}
+		{% if l.info.hasHS_hit %}<td>{{ l.players[p]['headshots_hit'] }}</td>{% endif %}
+		{% if l.info.hasHS and not l.info.hasHS_hit %}<td>{{ l.players[p]['headshots'] }}</td>{% endif %}
+		{% if l.info.hasAS %}<td>{{ l.players[p]['as'] }}</td>{% endif %}
+		{% if l.info.hasSB %}<td>{{ l.players[p]['sentries'] }}</td>{% endif %}
+		{% if l.info.hasCP %}<td>{{ l.players[p]['cpc'] }}</td>{% endif %}
+		{% if l.info.hasIntel %}<td>{{ l.players[p]['ic'] }}</td>{% endif %}
+	</tr>
+	{%- endfor %}
+</tbody>
+</table>

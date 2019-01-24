@@ -1,0 +1,249 @@
+{% macro classimage(c, opacity=1.0) -%}
+{% if c in classes -%}<i class="{{ c }}" data-order="{{ classes.index(c) }}" style="opacity: {{ '%0.1f' % opacity }}"></i>{% endif %}
+{%- endmacro %}
+{% macro team_css(team) -%}
+{% if team == 'Blue' %}blu{% elif team == 'Red' %}red{% endif %}
+{%- endmacro %}
+
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns#">
+<head>	
+<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">    
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+<title>logs.tf Stream Viewer</title>
+<script src="{{ url_for('static', filename='js/vendor.js') }}"></script>
+<script src="{{ url_for('static', filename='js/common.js') }}"></script>
+<script src="{{ url_for('static', filename='js/vendor/jquery.tablesorter.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/log.js') }}"></script>
+
+{#<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>#}
+{% block scripts %}{% endblock %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% block styles %}{% endblock %}	
+<style>
+body {
+    background: #FFF;
+    font-family: 'Lato';
+    font-weight: 600;
+}
+.score-container {
+    width: 100%;
+    margin: 0;
+}
+.score {
+    width: 50%;
+    box-sizing: border-box;
+    border-radius: 0 !important;
+}
+.table {
+    margin: 0 auto;    
+    background: none;
+    max-width: 1000px;
+}
+#classtab {
+    display: none;
+}
+.log .blu, .log .red {
+    text-transform: uppercase;
+    text-align: center;
+}
+.log-section {
+    padding: 0;
+    margin: 0;
+}
+#teams {
+    margin: 0 auto;
+    max-width: 550px !important;
+}
+#log-section-teams {
+    background: #EEE;
+    border-bottom: 4px solid rgba(0,0,0,0.1) !important;
+}
+#log-section-rounds {    
+    margin: 0 auto;
+    border-bottom: 4px solid rgba(0,0,0,0.1) !important;
+}
+#rounds {
+    max-width: 600px !important;
+}
+.table {
+    width: 100%;
+    margin-bottom: 3px !important;
+}
+.healtable h6 {
+    font-weight: bold;
+    padding-left: 9px;
+}
+.log th, .log td {
+    
+}
+
+.healspread {
+    background: #FFF;        
+}
+.healspread thead {
+    background: none;
+    color: inherit;
+}
+.healspread th {
+    background: none !important;
+}
+.healtable {
+    padding: 0;
+}
+
+.log tbody > tr:nth-child(odd) {
+    background: #EEE;
+}
+h1 {
+    line-height: 30px;
+}
+</style>
+</head>
+<body>
+{# CONTENT #}
+<div id="log-score" class="score-container">
+    <div class="score blu"><h1 id="blu-name" class="pull-left" onclick="changeText('blu-name')">BLU</h1><h1 id="blu-score" class="pull-right" onclick="changeText('blu-score')">{{ l.teams.Blue.score if l.teams else l.info.Blue.score }}</h1></div>
+    <div class="score red"><h1 id="red-score" class="pull-left" onclick="changeText('red-score')">{{ l.teams.Red.score if l.teams else l.info.Red.score  }}</h1><h1 id="red-name" class="pull-right" onclick="changeText('red-name')">RED</h1></div>
+</div>
+
+<div id="page1">
+    
+    <div class="log-section" id="log-section-teams">
+    {% if l.teams %}
+    <table id="teams" class="log table">
+        <thead>
+            <tr>
+                <th class="team">Team</th>
+                <th><span class="tip" title="Kills">Kills</span></th>
+                {% if l.info.supplemental %}<th><span class="tip" title="Damage">Damage</span></th>{% endif %}
+                <th><span class="tip" title="Ubercharges">Übercharges</span></th>
+                {% if l.version and l.version >= 2 %}<th><span class="tip" title="Ubers dropped">Überdrops</span></th>{% endif %}
+                {% if l.info.hasCP %}<th><span class="tip" title="Captures">Captures</span></th>{% endif %}
+                {% if l.info.hasCP %}<th><span class="tip" title="1st Captures">Midfights</span></th>{% endif %}
+            </tr>
+        </thead>
+        <tbody>
+        {% for t in l.teams %}
+            <tr>
+                {% if t == 'Red' %}<td class="red">Red</td>{% else %}<td class="blu">Blu</td>{% endif %}
+                <td>{{ l.teams[t].kills }}</td>			
+                {% if l.info.supplemental %}<td>{{ l.teams[t].dmg }}</td>{% endif %}
+                <td>{{ l.teams[t].charges }}</td>
+                {% if l.version and l.version >= 2 %}<td>{{ l.teams[t].drops }}</td>{% endif %}
+                {% if l.info.hasCP %}<td>{{ l.teams[t].caps }}</td>{% endif %}
+                {% if l.info.hasCP %}<td>{{ l.teams[t].firstcaps }}</td>{% endif %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    
+    {% endif %}    
+    </div>
+    <div class="log-section" id="log-section-players">
+        {% include 'log/players_stream.html' %}
+    </div>    
+</div>
+<div id="page2">
+    <div class="log-section" id="log-section-rounds">
+    {% include 'log/rounds_stream.html' %}	
+    </div>    
+    <div class="log-section" id="log-section-healspread">
+    {% include 'log/healspread_stream.html' %}
+    </div>
+</div>
+<div id="page3">
+    <div class="log-section" id="log-section-cvc">
+    {% include 'log/classkills.html' %}
+    </div>
+</div>   
+   
+    <div id="settings" class="modal modal-small hide" role="dialog">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">×</button>
+            <h3>Change default settings</h3>
+        </div>		
+        <div class="modal-body">	
+            <div class="log-form">
+                <div class="control-group">			
+                    <label class="control-label">Default order</label>
+                    <div class="control-controls">
+                        <select id="sortselect" onchange="setCookie('tablesort', this.value, 365);">
+                            <option value="default">Team &amp; Class (Default)</option>
+                            <option value="da">Damage</option>
+                            <option value="tda">Team &amp; Damage</option>
+                            <option value="k">Kills</option>
+                            <option value="kad">KA/D</option>
+                            <option value="kd">K/D</option>
+                        </select>
+                    </div>			
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Force team order</label>
+                    <div class="control-controls"><input type="checkbox" id="force_team_sort"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+
+<script>
+
+class LogTabs {
+    constructor(pages) {
+        this.pages = pages;
+        this.currentPage = 0;
+        this._update();
+    }
+    next() {        
+        this.currentPage += 1;
+        if (this.currentPage > this.pages.length - 1) {
+            this.currentPage = 0;
+        }
+        this._update();
+    }
+    prev() {
+        this.currentPage -= 1;
+        if (this.currentPage < 0) {
+            this.currentPage = this.pages.length - 1;
+        }
+        this._update();
+    }
+    _update() {
+        for (let i=0; i < this.pages.length; i++) {
+            let el = document.getElementById(this.pages[i]);
+            if (this.currentPage == i) {
+                el.style.display = "block";
+            } else {
+                el.style.display = "none";
+            }
+        }
+    }
+}
+
+window.tab = new LogTabs(['page1', 'page2', 'page3']);
+
+document.onkeydown = function(e) {
+    if (e.keyCode == '37') {
+        window.tab.prev();
+    }
+    if (e.keyCode == '39') {
+        window.tab.next();
+    }
+    console.log(window.tab.currentPage);
+};
+
+function changeText(elid) {
+    let el = document.getElementById(elid);    
+    el.innerHTML = prompt('New value', el.innerHTML);
+}
+
+</script>
+
+</body>
+</html>
+
+
